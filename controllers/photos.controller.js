@@ -61,36 +61,27 @@ exports.vote = async (req, res) => {
 
   try {
     const photoToUpdate = await Photo.findOne({ _id: req.params.id });
-    if (!photoToUpdate) res.status(404).json({ message: 'Not found' });
-    else {
-      const clientIp = requestIp.getClientIp(req);
-      try {
-        const votedUser = await Voter.findOne({ user: clientIp });
 
-        if (!votedUser) {
-          const newUser = new Voter({ user: clientIp, votes: [req.params.id] });
-          await newUser.save();
+    if (!photoToUpdate) throw new Error('Not found');
 
-          photoToUpdate.votes++;
-          photoToUpdate.save();
-          res.send({ message: 'OK' });
-        } else {
-          if (votedUser.votes.some(vote => vote == req.params.id)) {
-            res.status(500).json(err);
-          } else {
-            votedUser.votes.push(req.params.id)
-            await votedUser.save();
-            photoToUpdate.votes++;
-            photoToUpdate.save();
-            res.send({ message: 'OK' });
-          }
-        }
+    const clientIp = requestIp.getClientIp(req);
+    const votedUser = await Voter.findOne({ user: clientIp });
 
-      } catch (err) {
-        res.status(500).json(err);
+    if (!votedUser) {
+      const newUser = new Voter({ user: clientIp, votes: [req.params.id] });
+      await newUser.save();
+    } else {
+      if (votedUser.votes.some(vote => vote == req.params.id)) {
+        throw new Error("You've already voted");
       }
-
+      votedUser.votes.push(req.params.id)
+      await votedUser.save();
     }
+
+    photoToUpdate.votes++;
+    photoToUpdate.save();
+    res.send({ message: 'OK' });
+
   } catch (err) {
     res.status(500).json(err);
   }
