@@ -9,10 +9,11 @@ exports.add = async (req, res) => {
     const file = req.files.file;
     const acceptedExtensions = ['gif', 'jpg', 'png'];
 
-    if (title && author && email && file) { // if fields are not empty...
+    if (title && title.length <= 25 && author && author.length <= 50 && email && file) { // if fields are not empty...
 
       const fileName = file.path.split('/').slice(-1)[0]; // cut only filename from full path, e.g. C:/test/abc.jpg -> abc.jpg
       const fileExt = fileName.split('.').slice(-1)[0];
+
       if (acceptedExtensions.some(ext => ext === fileExt)) {
         const newPhoto = new Photo({ title, author, email, src: fileName, votes: 0 });
         await newPhoto.save(); // ...save new photo in DB
