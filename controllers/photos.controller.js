@@ -1,7 +1,7 @@
 const requestIp = require('request-ip');
 
-const Photo = require('../models/photo.model');
-const Voter = require('../models/voter.model');
+const Photo = require('../models/Photo.model');
+const Voter = require('../models/Voter.model');
 
 /****** SUBMIT PHOTO ********/
 
