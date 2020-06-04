@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -19,11 +20,11 @@ connectToDB();
 app.use(cors());
 app.use(formidable({ uploadDir: './public/uploads/' }, [{
   event: 'fileBegin', // on every file upload...
-    action: (req, res, next, name, file) => {
-      const fileName = uniqid() + '.' + file.name.split('.')[1];
-      file.path = __dirname + '/public/uploads/photo_' + fileName; // ...move the file to public/uploads with unique name
-    }
-  },
+  action: (req, res, next, name, file) => {
+    const fileName = uniqid() + '.' + file.name.split('.')[1];
+    file.path = __dirname + '/public/uploads/photo_' + fileName; // ...move the file to public/uploads with unique name
+  }
+},
 ]));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
